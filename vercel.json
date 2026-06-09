@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": false,
+  "trailingSlash": true,
+  "rewrites": [
+    { "source": "/juego_1", "destination": "/juego_1/" },
+    { "source": "/juego_2", "destination": "/juego_2/" }
+  ]
+}

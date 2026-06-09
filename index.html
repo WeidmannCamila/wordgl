@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WordGL - Juego 1</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body data-game-id="juego_1" data-base-path="./">
+    <main class="app">
+      <header class="hero">
+        <p class="eyebrow">Juego 1</p>
+        <h1>WordGL</h1>
+        <p>Adivina la palabra secreta en 7 intentos.</p>
+      </header>
+
+      <section class="status-panel" aria-live="polite">
+        <p id="statusText">Escribe tu palabra y presiona Enter.</p>
+        <p id="attemptText">Intento 1 de 7</p>
+      </section>
+
+      <section
+        id="board"
+        class="board"
+        aria-label="Tablero del juego"
+      ></section>
+
+      <section class="actions" aria-label="Acciones del juego">
+        <button id="shareBtn" class="share-btn" type="button" disabled>
+          Compartir resultado
+        </button>
+        <button id="newGameBtn" class="new-btn" type="button">
+          Nueva palabra
+        </button>
+      </section>
+
+      <section id="gameLinks" class="game-links" hidden></section>
+
+      <section class="help">
+        <p>
+          <strong>Reglas:</strong> Verde = letra correcta y bien ubicada,
+          Amarillo = letra correcta en otra posicion, Gris = letra no esta.
+        </p>
+      </section>
+    </main>
+
+    <script type="module" src="js/juego1.js"></script>
+  </body>
+</html>
