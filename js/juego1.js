@@ -80,6 +80,10 @@ function checkDailyState() {
       if (surrenderBtnEl) surrenderBtnEl.disabled = true;
       hintBtnEl.disabled = true;
       gameLinksEl.hidden = false;
+      
+      if (won) {
+        showWinCard();
+      }
     }
   }
 }
@@ -240,6 +244,7 @@ function submitGuess() {
     if (surrenderBtnEl) surrenderBtnEl.disabled = true;
     gameLinksEl.hidden = false;
     saveDailyState();
+    showWinCard();
     return;
   }
 
@@ -342,18 +347,49 @@ function giveHint() {
   }
 }
 
-async function shareResult() {
-  if (!won) {
-    return;
-  }
-
-  const usedAttempts = currentRow + 1;
+function getShareText() {
+  const usedAttempts = currentRow + (won && !gameOver ? 1 : (gameOver && won && currentRow < guesses.length && guesses[currentRow].join("") === secretWord ? 1 : 0));
+  // Si ya es gameOver y ganó, `currentRow` se queda en el último intento, o en el siguiente?
+  // `currentRow` es el índice del array (0 basado), el num de intentos es `currentRow + 1`.
+  const realAttempts = won ? currentRow + 1 : currentRow;
   const emojiRows = results
-    .slice(0, usedAttempts)
+    .slice(0, realAttempts)
     .map((row) => row.map(toEmoji).join(""))
     .join("\n");
+  return `WordGL (Clásico) - ${realAttempts} intentos\nPalabra: ${secretEntry.label}\nPuntaje: ${buildGame1Score()}\n${emojiRows}\n\nJuega tú también en: ${window.location.origin}${window.location.pathname}`;
+}
 
-  const message = `WordGL (Clásico) - ${usedAttempts} intentos\nPalabra: ${secretEntry.label}\nPuntaje: ${buildGame1Score()}\n${emojiRows}\n\nJuega tú también en: ${window.location.origin}${window.location.pathname}`;
+async function copyResult() {
+  const message = getShareText();
+  try {
+    await navigator.clipboard.writeText(message);
+    statusTextEl.textContent = "Resultado copiado al portapapeles.";
+  } catch {
+    statusTextEl.textContent = "No se pudo copiar el resultado.";
+  }
+}
+
+function shareToPlatform(platform) {
+  const message = getShareText();
+  const encodedMessage = encodeURIComponent(message);
+  let url = '';
+
+  if (platform === 'x') {
+    url = `https://twitter.com/intent/tweet?text=${encodedMessage}`;
+  } else if (platform === 'whatsapp') {
+    url = `https://wa.me/?text=${encodedMessage}`;
+  } else if (platform === 'telegram') {
+    url = `https://t.me/share/url?url=${encodeURIComponent(window.location.origin + window.location.pathname)}&text=${encodeURIComponent(`WordGL (Clásico) - Palabra: ${secretEntry.label}\nPuntaje: ${buildGame1Score()}\n`)}`;
+  }
+
+  if (url) {
+    window.open(url, '_blank');
+  }
+}
+
+async function shareResult() {
+  if (!won) return;
+  const message = getShareText();
 
   if (navigator.share) {
     try {
@@ -361,16 +397,9 @@ async function shareResult() {
       statusTextEl.textContent = "Resultado compartido.";
       return;
     } catch (error) {
-      // Si el usuario cancela, seguimos con copiar al portapapeles.
     }
   }
-
-  try {
-    await navigator.clipboard.writeText(message);
-    statusTextEl.textContent = "Resultado copiado al portapapeles.";
-  } catch {
-    statusTextEl.textContent = "No se pudo compartir ni copiar el resultado.";
-  }
+  copyResult();
 }
 
 function toEmoji(state) {
@@ -383,5 +412,88 @@ function toEmoji(state) {
   }
 
   return "⬜";
+}
+
+let winTimerInterval;
+
+function showWinCard() {
+  const overlay = document.getElementById("winOverlay");
+  if (!overlay) return;
+
+  const epoch = new Date("2024-01-01T00:00:00").getTime();
+  const now = new Date().getTime();
+  const diffDays = Math.floor((now - epoch) / (1000 * 60 * 60 * 24));
+  document.getElementById("winDayNumber").textContent = `#${diffDays}`;
+
+  const miniBoard = document.getElementById("winMiniBoard");
+  miniBoard.innerHTML = "";
+  miniBoard.style.gridTemplateColumns = `repeat(${wordLength}, 1fr)`;
+  
+  const realAttempts = won ? currentRow + 1 : currentRow;
+  for (let r = 0; r < realAttempts; r++) {
+    for (let c = 0; c < wordLength; c++) {
+      const state = results[r][c];
+      const block = document.createElement("div");
+      block.className = `win-mini-block ${state || 'absent'}`;
+      miniBoard.appendChild(block);
+    }
+  }
+
+  const closeBtn = document.getElementById("closeWinCardBtn");
+  if (closeBtn) {
+    closeBtn.onclick = () => {
+      overlay.hidden = true;
+      if (winTimerInterval) clearInterval(winTimerInterval);
+    };
+  }
+
+  const shareMain = document.getElementById("winShareMainBtn");
+  if (shareMain) shareMain.onclick = shareResult;
+  
+  const shareCopyTop = document.getElementById("winShareCopyTop");
+  if (shareCopyTop) shareCopyTop.onclick = copyResult;
+
+  const shareX = document.getElementById("winShareX");
+  if (shareX) shareX.onclick = () => shareToPlatform('x');
+
+  const shareWa = document.getElementById("winShareWa");
+  if (shareWa) shareWa.onclick = () => shareToPlatform('whatsapp');
+
+  const shareTg = document.getElementById("winShareTg");
+  if (shareTg) shareTg.onclick = () => shareToPlatform('telegram');
+
+  const shareCopy = document.getElementById("winShareCopy");
+  if (shareCopy) shareCopy.onclick = copyResult;
+
+  overlay.hidden = false;
+  startWinTimer();
+}
+
+function startWinTimer() {
+  const timerEl = document.getElementById("winTimer");
+  if (!timerEl) return;
+  if (winTimerInterval) clearInterval(winTimerInterval);
+
+  function update() {
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setHours(24, 0, 0, 0);
+    const diff = tomorrow - now;
+    
+    if (diff <= 0) {
+      timerEl.textContent = "00:00:00";
+      clearInterval(winTimerInterval);
+      return;
+    }
+    
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24).toString().padStart(2, "0");
+    const m = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, "0");
+    const s = Math.floor((diff / 1000) % 60).toString().padStart(2, "0");
+    
+    timerEl.textContent = `${h}:${m}:${s}`;
+  }
+
+  update();
+  winTimerInterval = setInterval(update, 1000);
 }
 

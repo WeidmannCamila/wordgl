@@ -1073,3 +1073,197 @@ body[data-ship="viewjune"] .score-bar-fill { background: linear-gradient(90deg, 
     display: none;
   }
 }
+
+/* ─── Win Overlay ────────────────────────────────────────── */
+.win-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInOverlay 0.3s ease;
+  color: #fff;
+}
+
+.win-overlay[hidden] {
+  display: none;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.win-card {
+  position: relative;
+  width: 90%;
+  max-width: 380px;
+  background: #18181b;
+  border-radius: 20px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.close-win-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  color: #a1a1aa;
+  font-size: 1.5rem;
+  border: none;
+  padding: 4px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-win-btn:hover {
+  color: #fff;
+}
+
+.win-card-content h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #fff;
+}
+
+.win-card-content h3 {
+  margin: 4px 0 24px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.win-mini-board {
+  display: grid;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.win-mini-block {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: #3f3f46;
+}
+
+.win-mini-block.correct {
+  background: #4ade80;
+}
+
+.win-mini-block.present {
+  background: #fbbf24;
+}
+
+.win-mini-block.absent {
+  background: #3f3f46;
+}
+
+.win-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  text-align: left;
+}
+
+.win-countdown {
+  flex: 1;
+}
+
+.win-countdown p {
+  margin: 0 0 4px;
+  font-size: 0.8rem;
+  color: #a1a1aa;
+  text-transform: uppercase;
+}
+
+#winTimer {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.win-share-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.win-share-top {
+  display: flex;
+  gap: 6px;
+}
+
+.win-share-main-btn {
+  background: #4ade80;
+  color: #064e3b;
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.win-share-main-btn:hover {
+  opacity: 0.9;
+}
+
+.win-share-icon-btn {
+  background: #4ade80;
+  color: #064e3b;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.win-share-icon-btn:hover {
+  opacity: 0.9;
+}
+
+.win-socials {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.win-social-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s;
+  padding: 0;
+}
+
+.win-social-btn:hover {
+  transform: scale(1.05);
+}
+
+.win-social-btn.x-btn { background: #000; }
+.win-social-btn.wa-btn { background: #25d366; }
+.win-social-btn.tg-btn { background: #0088cc; }
+.win-social-btn.copy-btn { background: #22c55e; }
