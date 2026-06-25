@@ -61,7 +61,11 @@ newGameBtnEl.addEventListener("click", resetGame);
 hintBtnEl.addEventListener("click", giveHint);
 
 function pickSecretEntry() {
-  return getRandomThaiGlWord({ minLength: 3 });
+  let word;
+  do {
+    word = getRandomThaiGlWord({ minLength: 3 });
+  } while (word.normalized.length > 12);
+  return word;
 }
 
 function emptyGrid(rows, cols) {

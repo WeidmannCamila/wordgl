@@ -18,37 +18,31 @@ const SHIPS = [
   {
     key: "lingorm",
     label: "LingOrm",
-    color: "#0d9488",
+    color: "#9333ea",
     image: "/images/themes/lingorm.jpg",
-  },
-  {
-    key: "fayeyoko",
-    label: "FayeYoko",
-    color: "#d97706",
-    image: "/images/themes/fayeyoko.jpg",
   },
   {
     key: "milklove",
     label: "MilkLove",
-    color: "#ca8a04",
+    color: "#ec4899",
     image: "/images/themes/milklove.jpg",
   },
   {
     key: "viewjune",
     label: "ViewJune",
-    color: "#0284c7",
+    color: "#06b6d4",
     image: "/images/themes/viewjune.jpg",
   },
   {
     key: "namtanfilm",
     label: "NamtanFilm",
-    color: "#059669",
+    color: "#38bdf8",
     image: "/images/themes/namtanfilm.jpg",
   },
   {
     key: "lmsy",
     label: "LMSY",
-    color: "#dc2626",
+    color: "#f59e0b",
     image: "/images/themes/lmsy.png",
   },
 ];
@@ -75,20 +69,32 @@ function applyThemeDecorations(ship) {
   }
   document.querySelectorAll('.theme-decoration').forEach((el) => el.remove());
 
-  if (ship === "englot") {
+  const shipConfigs = {
+    englot: { icon: ['🤍'], interval: 400 },
+    freenbecky: { icon: ['✨', '💫'], interval: 350 },
+    lingorm: { icon: ['💜'], interval: 400 },
+    milklove: { icon: ['💚', '🩷'], interval: 350 },
+    namtanfilm: { icon: ['🩵', '💛'], interval: 350 },
+    lmsy: { icon: ['🩵', '💛', '✨'], interval: 350 },
+    viewjune: { icon: ['🌸', '🦋'], interval: 450 },
+  };
+
+  const config = shipConfigs[ship];
+  if (config) {
     themeInterval = setInterval(() => {
-      const heart = document.createElement('div');
-      heart.className = 'theme-decoration englot-heart';
-      heart.textContent = '🤍';
-      heart.style.left = Math.random() * 100 + 'vw';
-      heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
-      heart.style.fontSize = (Math.random() * 12 + 16) + 'px';
-      document.body.appendChild(heart);
+      const particle = document.createElement('div');
+      particle.className = `theme-decoration ${ship}-particle`;
+      // Pick random icon from array
+      particle.textContent = config.icon[Math.floor(Math.random() * config.icon.length)];
+      particle.style.left = Math.random() * 100 + 'vw';
+      particle.style.animationDuration = (Math.random() * 3 + 4) + 's';
+      particle.style.fontSize = (Math.random() * 12 + 16) + 'px';
+      document.body.appendChild(particle);
 
       setTimeout(() => {
-        if (heart.parentNode) heart.remove();
+        if (particle.parentNode) particle.remove();
       }, 7000);
-    }, 400);
+    }, config.interval);
   }
 }
 

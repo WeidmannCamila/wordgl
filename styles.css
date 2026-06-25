@@ -59,69 +59,58 @@
 }
 
 :root[data-ship="lingorm"] {
-  --accent: #0d9488;
-  --bg-top: #f0fdfb;
-  --bg-bottom: #ccf2ee;
-  --panel-ship: rgba(232, 252, 248, 0.86);
+  --accent: #9333ea;
+  --bg-top: #f3e8ff;
+  --bg-bottom: #d8b4fe;
+  --panel-ship: rgba(243, 232, 255, 0.86);
 }
 :root[data-mode="dark"][data-ship="lingorm"] {
-  --bg-top: #031a18;
-  --bg-bottom: #052a26;
-}
-
-:root[data-ship="fayeyoko"] {
-  --accent: #d97706;
-  --bg-top: #fffbeb;
-  --bg-bottom: #fde68a;
-  --panel-ship: rgba(255, 246, 225, 0.86);
-}
-:root[data-mode="dark"][data-ship="fayeyoko"] {
-  --bg-top: #1c1000;
-  --bg-bottom: #2d1a00;
+  --bg-top: #2b1055;
+  --bg-bottom: #3b0764;
 }
 
 :root[data-ship="milklove"] {
-  --accent: #ca8a04;
-  --bg-top: #fefce8;
-  --bg-bottom: #fef08a;
-  --panel-ship: rgba(255, 250, 220, 0.86);
+  --accent: #ec4899;
+  --bg-top: #fdf2f8;
+  --bg-bottom: #fbcfe8;
+  --panel-ship: rgba(253, 242, 248, 0.86);
 }
 :root[data-mode="dark"][data-ship="milklove"] {
-  --bg-top: #181200;
-  --bg-bottom: #261c00;
+  --bg-top: #500724;
+  --bg-bottom: #831843;
 }
 
 :root[data-ship="viewjune"] {
-  --accent: #0284c7;
-  --bg-top: #f0f9ff;
-  --bg-bottom: #bae6fd;
-  --panel-ship: rgba(228, 246, 255, 0.86);
+  --accent: #06b6d4;
+  --bg-top: #ecfeff;
+  --bg-bottom: #a5f3fc;
+  --panel-ship: rgba(236, 254, 255, 0.86);
 }
 :root[data-mode="dark"][data-ship="viewjune"] {
-  --bg-top: #00131e;
-  --bg-bottom: #001f30;
+  --bg-top: #083344;
+  --bg-bottom: #164e63;
 }
 
 :root[data-ship="namtanfilm"] {
-  --accent: #059669;
-  --bg-top: #f0fdf4;
-  --bg-bottom: #bbf7d0;
-  --panel-ship: rgba(230, 251, 238, 0.86);
+  --accent: #38bdf8;
+  --bg-top: #f0f9ff;
+  --bg-bottom: #bae6fd;
+  --panel-ship: rgba(240, 249, 255, 0.86);
 }
 :root[data-mode="dark"][data-ship="namtanfilm"] {
-  --bg-top: #011810;
-  --bg-bottom: #02261a;
+  --bg-top: #0c4a6e;
+  --bg-bottom: #0369a1;
 }
 
 :root[data-ship="lmsy"] {
-  --accent: #dc2626;
-  --bg-top: #fff5f5;
-  --bg-bottom: #fecaca;
-  --panel-ship: rgba(255, 237, 237, 0.86);
+  --accent: #f59e0b;
+  --bg-top: #fffbeb;
+  --bg-bottom: #fde68a;
+  --panel-ship: rgba(255, 251, 235, 0.86);
 }
 :root[data-mode="dark"][data-ship="lmsy"] {
-  --bg-top: #1f0505;
-  --bg-bottom: #2d0707;
+  --bg-top: #451a03;
+  --bg-bottom: #78350f;
 }
 
 * {
@@ -161,8 +150,7 @@ body {
 }
 
 .app.dynamic-board {
-  width: min(calc((var(--board-columns, 5) * 58px) + 120px), 100%);
-  max-width: 920px;
+  width: min(720px, 100%);
 }
 
 .app.app-wide {
@@ -213,12 +201,14 @@ body {
 }
 
 .row {
-  display: grid;
-  grid-template-columns: repeat(var(--board-columns, 5), minmax(0, 1fr));
-  gap: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .tile {
+  width: clamp(34px, 8vw, 52px);
   aspect-ratio: 1;
   border-radius: 12px;
   border: 2px solid #cfd9ea;
@@ -944,47 +934,79 @@ button {
   background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
-/* ─── ENGLOT Theme Customizations ────────────────────────────── */
-body[data-ship="englot"] {
-  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>👑</text></svg>") 16 0, auto;
-}
+/* ─── THEME CUSTOMIZATIONS (ALL SHIPS) ────────────────────────────── */
 
-body[data-ship="englot"] button,
-body[data-ship="englot"] .tile,
-body[data-ship="englot"] input,
-body[data-ship="englot"] a,
-body[data-ship="englot"] .settings-toggle {
-  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🤍</text></svg>") 16 0, pointer;
-}
+/* Englot */
+body[data-ship="englot"] { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>👑</text></svg>") 16 0, auto; }
+body[data-ship="englot"] button, body[data-ship="englot"] .tile, body[data-ship="englot"] input, body[data-ship="englot"] a, body[data-ship="englot"] .settings-toggle { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🤍</text></svg>") 16 0, pointer; }
+body[data-ship="englot"] .tile.active { box-shadow: 0 0 15px rgba(124, 58, 237, 0.35); border-color: #a78bfa; }
+body[data-ship="englot"] .tile.correct { box-shadow: 0 0 20px rgba(124, 58, 237, 0.5); background: linear-gradient(135deg, #7c3aed, #a855f7); border-color: #a855f7; }
+body[data-ship="englot"] .score-bar-fill { background: linear-gradient(90deg, #ec4899, #a855f7, #7c3aed); }
 
-body[data-ship="englot"] .tile.active {
-  box-shadow: 0 0 15px rgba(124, 58, 237, 0.35);
-  border-color: #a78bfa;
-}
+/* FreenBecky */
+body[data-ship="freenbecky"] { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>☀️</text></svg>") 16 0, auto; }
+body[data-ship="freenbecky"] button, body[data-ship="freenbecky"] .tile, body[data-ship="freenbecky"] input, body[data-ship="freenbecky"] a, body[data-ship="freenbecky"] .settings-toggle { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🌙</text></svg>") 16 0, pointer; }
+body[data-ship="freenbecky"] .tile.active { box-shadow: 0 0 15px rgba(225, 29, 72, 0.35); border-color: #fb7185; }
+body[data-ship="freenbecky"] .tile.correct { box-shadow: 0 0 20px rgba(225, 29, 72, 0.5); background: linear-gradient(135deg, #e11d48, #f43f5e); border-color: #f43f5e; }
+body[data-ship="freenbecky"] .score-bar-fill { background: linear-gradient(90deg, #fda4af, #f43f5e, #e11d48); }
 
-body[data-ship="englot"] .tile.correct {
-  box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
-  background: linear-gradient(135deg, #7c3aed, #a855f7);
-  border-color: #a855f7;
-}
+/* LingOrm */
+body[data-ship="lingorm"] { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🍮</text></svg>") 16 0, auto; }
+body[data-ship="lingorm"] button, body[data-ship="lingorm"] .tile, body[data-ship="lingorm"] input, body[data-ship="lingorm"] a, body[data-ship="lingorm"] .settings-toggle { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🌶️</text></svg>") 16 0, pointer; }
+body[data-ship="lingorm"] .tile.active { box-shadow: 0 0 15px rgba(147, 51, 234, 0.35); border-color: #c084fc; }
+body[data-ship="lingorm"] .tile.correct { box-shadow: 0 0 20px rgba(147, 51, 234, 0.5); background: linear-gradient(135deg, #9333ea, #a855f7); border-color: #a855f7; }
+body[data-ship="lingorm"] .score-bar-fill { background: linear-gradient(90deg, #e879f9, #c084fc, #9333ea); }
 
-body[data-ship="englot"] .score-bar-fill {
-  background: linear-gradient(90deg, #ec4899, #a855f7, #7c3aed);
-}
+/* MilkLove */
+body[data-ship="milklove"] { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🐶</text></svg>") 16 0, auto; }
+body[data-ship="milklove"] button, body[data-ship="milklove"] .tile, body[data-ship="milklove"] input, body[data-ship="milklove"] a, body[data-ship="milklove"] .settings-toggle { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🥛</text></svg>") 16 0, pointer; }
+body[data-ship="milklove"] .tile.active { box-shadow: 0 0 15px rgba(236, 72, 153, 0.35); border-color: #f472b6; }
+body[data-ship="milklove"] .tile.correct { box-shadow: 0 0 20px rgba(236, 72, 153, 0.5); background: linear-gradient(135deg, #ec4899, #10b981); border-color: #f472b6; }
+body[data-ship="milklove"] .score-bar-fill { background: linear-gradient(90deg, #34d399, #f472b6, #ec4899); }
 
-@keyframes floatUpHeart {
+/* NamtanFilm */
+body[data-ship="namtanfilm"] { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🐼</text></svg>") 16 0, auto; }
+body[data-ship="namtanfilm"] button, body[data-ship="namtanfilm"] .tile, body[data-ship="namtanfilm"] input, body[data-ship="namtanfilm"] a, body[data-ship="namtanfilm"] .settings-toggle { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🦆</text></svg>") 16 0, pointer; }
+body[data-ship="namtanfilm"] .tile.active { box-shadow: 0 0 15px rgba(56, 189, 248, 0.35); border-color: #7dd3fc; }
+body[data-ship="namtanfilm"] .tile.correct { box-shadow: 0 0 20px rgba(56, 189, 248, 0.5); background: linear-gradient(135deg, #38bdf8, #fde047); border-color: #7dd3fc; }
+body[data-ship="namtanfilm"] .score-bar-fill { background: linear-gradient(90deg, #fef08a, #7dd3fc, #38bdf8); }
+
+/* LMSY */
+body[data-ship="lmsy"] { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🐻</text></svg>") 16 0, auto; }
+body[data-ship="lmsy"] button, body[data-ship="lmsy"] .tile, body[data-ship="lmsy"] input, body[data-ship="lmsy"] a, body[data-ship="lmsy"] .settings-toggle { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🐰</text></svg>") 16 0, pointer; }
+body[data-ship="lmsy"] .tile.active { box-shadow: 0 0 15px rgba(245, 158, 11, 0.35); border-color: #fcd34d; }
+body[data-ship="lmsy"] .tile.correct { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); background: linear-gradient(135deg, #f59e0b, #fbbf24); border-color: #fcd34d; }
+body[data-ship="lmsy"] .score-bar-fill { background: linear-gradient(90deg, #fde047, #fbbf24, #f59e0b); }
+
+/* ViewJune */
+body[data-ship="viewjune"] { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🌸</text></svg>") 16 0, auto; }
+body[data-ship="viewjune"] button, body[data-ship="viewjune"] .tile, body[data-ship="viewjune"] input, body[data-ship="viewjune"] a, body[data-ship="viewjune"] .settings-toggle { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🦋</text></svg>") 16 0, pointer; }
+body[data-ship="viewjune"] .tile.active { box-shadow: 0 0 15px rgba(6, 182, 212, 0.35); border-color: #67e8f9; }
+body[data-ship="viewjune"] .tile.correct { box-shadow: 0 0 20px rgba(6, 182, 212, 0.5); background: linear-gradient(135deg, #06b6d4, #22d3ee); border-color: #67e8f9; }
+body[data-ship="viewjune"] .score-bar-fill { background: linear-gradient(90deg, #a5f3fc, #22d3ee, #06b6d4); }
+
+/* Particles Generic Class */
+@keyframes floatUpParticle {
   0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
   10% { opacity: 0.8; }
   80% { opacity: 0.8; }
   100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
 }
 
-.englot-heart {
+.theme-decoration {
   position: fixed;
   color: white;
   user-select: none;
   pointer-events: none;
   z-index: 1;
-  animation: floatUpHeart linear infinite;
-  text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(124, 58, 237, 0.6);
+  animation: floatUpParticle linear infinite;
 }
+
+/* Individual particle tweaks */
+.englot-particle { text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(124, 58, 237, 0.6); }
+.freenbecky-particle { text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(225, 29, 72, 0.6); }
+.lingorm-particle { text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(147, 51, 234, 0.6); }
+.milklove-particle { text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(236, 72, 153, 0.6); }
+.namtanfilm-particle { text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(56, 189, 248, 0.6); }
+.lmsy-particle { text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(245, 158, 11, 0.6); }
+.viewjune-particle { text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(6, 182, 212, 0.6); }
