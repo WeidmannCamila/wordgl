@@ -66,19 +66,48 @@ function applyMode(mode) {
   localStorage.setItem(STORAGE_KEY_MODE, mode);
 }
 
+let themeInterval = null;
+
+function applyThemeDecorations(ship) {
+  if (themeInterval) {
+    clearInterval(themeInterval);
+    themeInterval = null;
+  }
+  document.querySelectorAll('.theme-decoration').forEach((el) => el.remove());
+
+  if (ship === "englot") {
+    themeInterval = setInterval(() => {
+      const heart = document.createElement('div');
+      heart.className = 'theme-decoration englot-heart';
+      heart.textContent = '🤍';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+      heart.style.fontSize = (Math.random() * 12 + 16) + 'px';
+      document.body.appendChild(heart);
+
+      setTimeout(() => {
+        if (heart.parentNode) heart.remove();
+      }, 7000);
+    }, 400);
+  }
+}
+
 function applyShip(ship) {
   document.documentElement.dataset.ship = ship;
+  document.body.dataset.ship = ship;
   localStorage.setItem(STORAGE_KEY_SHIP, ship);
 
   const selectedShip = SHIPS.find((entry) => entry.key === ship);
   if (selectedShip?.image) {
     document.documentElement.style.setProperty(
       "--theme-image",
-      `url(\"${selectedShip.image}\")`,
+      `url("${selectedShip.image}")`,
     );
   } else {
     document.documentElement.style.setProperty("--theme-image", "none");
   }
+  
+  applyThemeDecorations(ship);
 }
 
 function buildPanel() {

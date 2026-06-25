@@ -149,6 +149,8 @@ body {
 }
 
 .app {
+  position: relative;
+  z-index: 10;
   width: min(560px, 100%);
   background: var(--panel-ship, var(--panel));
   border: 1px solid #ffffff;
@@ -940,4 +942,49 @@ button {
 
 .tile.active {
   background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* ─── ENGLOT Theme Customizations ────────────────────────────── */
+body[data-ship="englot"] {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>👑</text></svg>") 16 0, auto;
+}
+
+body[data-ship="englot"] button,
+body[data-ship="englot"] .tile,
+body[data-ship="englot"] input,
+body[data-ship="englot"] a,
+body[data-ship="englot"] .settings-toggle {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='font-size:26px;'><text y='50%'>🤍</text></svg>") 16 0, pointer;
+}
+
+body[data-ship="englot"] .tile.active {
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.35);
+  border-color: #a78bfa;
+}
+
+body[data-ship="englot"] .tile.correct {
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  border-color: #a855f7;
+}
+
+body[data-ship="englot"] .score-bar-fill {
+  background: linear-gradient(90deg, #ec4899, #a855f7, #7c3aed);
+}
+
+@keyframes floatUpHeart {
+  0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
+  10% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+}
+
+.englot-heart {
+  position: fixed;
+  color: white;
+  user-select: none;
+  pointer-events: none;
+  z-index: 1;
+  animation: floatUpHeart linear infinite;
+  text-shadow: 0 0 12px rgba(255,255,255,0.9), 0 0 24px rgba(124, 58, 237, 0.6);
 }
