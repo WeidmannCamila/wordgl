@@ -67,73 +67,141 @@ const SHIP_INFO = {
     "Protagonizan Show Me Love 👑",
     "Se conocieron en Miss Grand",
     "Estelarizan Petrichor 🌧️",
-    "Fandom: Englot"
+    "Fandom: Englot",
+    "Ambas están en GrandTV",
+    "Engfa es cantante y actriz",
+    "Charlotte tiene ascendencia británica",
+    "Protagonizarán Love Bully",
+    "Su primera colaboración actoral fue en 2023",
+    "Realizan giras y conciertos masivos"
   ],
   freenbecky: [
     "Protagonistas de GAP The Series 💖",
     "Estelarizan The Loyal Pin 🎀",
-    "Uranus 2324 🌌"
+    "Uranus 2324 🌌",
+    "Freen nació en 1998",
+    "Becky estudió leyes",
+    "Fandom: FreenBecky",
+    "Pertenecen a IdolFactory",
+    "Fueron pioneras en grandes GLs en Tailandia",
+    "Ambas tienen mascotas famosas",
+    "Comparten escenas memorables"
   ],
   lingorm: [
     "Protagonistas de The Secret of Us 👩‍⚕️",
     "Pertenecen a CH3",
-    "Only You es su próximo proyecto ✨"
+    "Only You es su próximo proyecto ✨",
+    "Fandom: LingOrm",
+    "Orm es hija de la actriz Koy Naruemon",
+    "Lingling tiene raíces de Hong Kong",
+    "En la serie son Doctora Fahlada y Earn",
+    "Tienen un proyecto llamado In Love Forever",
+    "Primera pareja GL de CH3",
+    "Su popularidad creció rapidísimo"
   ],
   milklove: [
     "Conocidas por 23.5 🌎",
     "Aparecieron en Bad Buddy juntas",
-    "Son actrices de GMMTV"
+    "Son actrices de GMMTV",
+    "Fandom: MilkLove",
+    "En 23.5 son Ongsa y Sun",
+    "Tienen su propio evento Ditto",
+    "Pioneras GL de GMMTV",
+    "Participan en Girls Rules",
+    "Comparten agencia con otras parejas",
+    "Tienen gran química cómica"
   ],
   viewjune: [
     "Aparecen en 23.5 👽",
     "Son parte de GMMTV",
-    "Su ship secundario es muy querido"
+    "Su ship secundario es muy querido",
+    "En 23.5 interpretan a Aylin y Luna",
+    "View es conocida por The Jungle",
+    "June tiene muchos talentos y fans fieles",
+    "Fandom suele ser ViewJune",
+    "Interactúan muchísimo con fans",
+    "Aparecen frecuentemente juntas",
+    "También actuaron en otros proyectos juntas"
   ],
   namtanfilm: [
     "Protagonizan Pluto 🪐",
     "Ambas de GMMTV",
-    "Actúan en The Girls Rules"
+    "Actúan en The Girls Rules",
+    "Namtan es Tipnaree Weerawatnodom",
+    "Film es Rachanun Mahawan",
+    "En Pluto hacen de gemelas y enamoradas",
+    "Fandom: NamtanFilm",
+    "Namtan tiene gran trayectoria actoral",
+    "Participan en la serie Her",
+    "Tienen una estética visual increíble"
   ],
   lmsy: [
     "Protagonizan Affair 🎬",
     "IdolFactory",
-    "Harmony Secret 🎵"
+    "Harmony Secret 🎵",
+    "Fandom: LMSY",
+    "Lookmhee actúa en Hometown Romance",
+    "Sonya estudió en Australia",
+    "El ship brilla por su gran química",
+    "Lookmhee tiene mucha presencia escénica",
+    "En Affair tienen escenas muy emotivas",
+    "Son de la misma productora que FreenBecky"
   ]
 };
 
+let currentShipInfo = [];
+let activeCardsCount = 0;
+const MAX_CARDS = 5;
+
+function spawnSingleCard(ship) {
+  if (activeCardsCount >= MAX_CARDS || currentShipInfo.length === 0) return;
+  
+  const randomIndex = Math.floor(Math.random() * currentShipInfo.length);
+  const fact = currentShipInfo[randomIndex];
+  
+  const card = document.createElement('div');
+  card.className = 'theme-info-card';
+  card.innerHTML = `<strong>Dato</strong>${fact}`;
+  
+  // Posicionamiento aleatorio en los bordes
+  const isLeft = Math.random() > 0.5;
+  const isTop = Math.random() > 0.5;
+  
+  if (isLeft) {
+    card.style.left = (Math.random() * 15 + 2) + 'vw';
+  } else {
+    card.style.right = (Math.random() * 15 + 2) + 'vw';
+  }
+  
+  if (isTop) {
+    card.style.top = (Math.random() * 30 + 10) + 'vh';
+  } else {
+    card.style.bottom = (Math.random() * 30 + 10) + 'vh';
+  }
+  
+  card.style.animationDelay = (Math.random() * 2) + 's';
+  
+  card.addEventListener('click', () => {
+    card.remove();
+    activeCardsCount--;
+    setTimeout(() => spawnSingleCard(ship), 400);
+  });
+  
+  document.body.appendChild(card);
+  activeCardsCount++;
+}
+
 function applyThemeInfoCards(ship) {
   document.querySelectorAll('.theme-info-card').forEach((el) => el.remove());
+  activeCardsCount = 0;
   
   if (ship === 'default' || !SHIP_INFO[ship]) return;
   
-  const infoList = [...SHIP_INFO[ship]].sort(() => Math.random() - 0.5);
-  const numCards = Math.floor(Math.random() * 2) + 2; // 2 o 3 cards
+  currentShipInfo = [...SHIP_INFO[ship]];
+  const numCards = Math.min(MAX_CARDS, currentShipInfo.length);
   
-  for (let i = 0; i < Math.min(numCards, infoList.length); i++) {
-    const card = document.createElement('div');
-    card.className = 'theme-info-card';
-    card.innerHTML = `<strong>Dato</strong>${infoList[i]}`;
-    
-    // Posicionamiento aleatorio en los bordes
-    const isLeft = Math.random() > 0.5;
-    const isTop = Math.random() > 0.5;
-    
-    if (isLeft) {
-      card.style.left = (Math.random() * 10 + 2) + 'vw';
-    } else {
-      card.style.right = (Math.random() * 10 + 2) + 'vw';
-    }
-    
-    if (isTop) {
-      card.style.top = (Math.random() * 20 + 10) + 'vh';
-    } else {
-      card.style.bottom = (Math.random() * 20 + 10) + 'vh';
-    }
-    
-    // Animation delay
-    card.style.animationDelay = (Math.random() * 2) + 's';
-    
-    document.body.appendChild(card);
+  for (let i = 0; i < numCards; i++) {
+    setTimeout(() => spawnSingleCard(ship), i * 300);
   }
 }
 
