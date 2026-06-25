@@ -64,16 +64,23 @@ let themeInterval = null;
 
 const SHIP_INFO = {
   englot: [
-    "Protagonizan Show Me Love 👑",
-    "Se conocieron en Miss Grand",
-    "Estelarizan Petrichor 🌧️",
-    "Fandom: Englot",
-    "Ambas están en GrandTV",
-    "Engfa es cantante y actriz",
-    "Charlotte tiene ascendencia británica",
-    "Protagonizarán Love Bully",
-    "Su primera colaboración actoral fue en 2023",
-    "Realizan giras y conciertos masivos"
+
+    "Engfa tiene un talento oculto impresionante para leer la fortuna a través de las cartas del Tarot.",
+    "Charlotte es de ascendencia tailandesa y británica, lo que le da sus rasgos característicos y su fluidez con el idioma inglés.",
+    "El icónico beso en la mejilla que Engfa le dio a Charlotte durante los ensayos de Miss Grand Tailandia 2022 fue el momento exacto en que el 'ship' explotó en las redes sociales.",
+    "A Engfa le aterrorizan los insectos, especialmente las cucarachas, y Charlotte suele ser la que mantiene la calma en esas situaciones.",
+    "El apodo cariñoso que los fans usan para Engfa es 'Daddy', debido a su aura protectora, madura y coqueta.",
+    "Charlotte ha confesado en varias ocasiones que su comida favorita absoluta es el salmón, especialmente en sashimi.",
+    "Antes de entrar al mundo de los certámenes de belleza, Engfa era una reconocida cantante de Likay (teatro tradicional tailandés) y música folclórica desde que era muy joven.",
+    "El fandom tiene un chiste interno muy famoso sobre los 'celos' de Engfa cada vez que Charlotte interactúa de manera muy cercana con otras compañeras de Miss Grand.",
+    "Charlotte estudió la carrera de Gestión Hotelera y de Turismo antes de que su vida diera un giro radical hacia el entretenimiento.",
+    "A pesar de sus agendas increíblemente llenas, ambas comparten una fuerte adicción a hacer transmisiones en vivo (Live streams) a altas horas de la madrugada para interactuar de forma casual con sus fans.",
+    "Engfa tiene una risa súper contagiosa y ruidosa que sus fans aman imitar, la cual suele desatar las risas de Charlotte en plena entrevista.",
+    "Charlotte es una gran fanática de la música K-Pop y en varias ocasiones se le ha visto recreando coreografías virales en sus redes sociales.",
+    "Durante las grabaciones de 'Show Me Love', el director reveló que muchas de las escenas de flirteo y miradas intensas entre ellas no estaban en el guion, sino que surgieron de la química natural del EngLot.",
+    "Engfa ha mencionado que si no fuera artista, le habría encantado dedicarse profesionalmente al diseño de modas o a algo relacionado con la estética.",
+    "El peluche favorito de Charlotte (un tiburón de IKEA) se volvió un objeto de culto entre el fandom después de que Engfa bromeara con él en un stream.",
+    "A ambas les encanta viajar a la playa, y los fans siempre colapsan las redes cuando suben fotos sutilmente combinadas o en el mismo spot frente al mar."
   ],
   freenbecky: [
     "Protagonistas de GAP The Series 💖",
@@ -136,16 +143,13 @@ const SHIP_INFO = {
     "Tienen una estética visual increíble"
   ],
   lmsy: [
-    "Protagonizan Affair 🎬",
-    "IdolFactory",
-    "Harmony Secret 🎵",
-    "Fandom: LMSY",
-    "Lookmhee actúa en Hometown Romance",
-    "Sonya estudió en Australia",
-    "El ship brilla por su gran química",
-    "Lookmhee tiene mucha presencia escénica",
-    "En Affair tienen escenas muy emotivas",
-    "Son de la misma productora que FreenBecky"
+    "El impacto de LMSY en 'Affair' fue masivo; lograron transmitir a la perfección la angustia, la tensión y el amor profundo de dos amigas de la infancia (Pleng y Wan Jai) que terminan cruzando la línea.",
+    "Sonya Saranphat tiene raíces tailandesas y danesas, lo que le otorga esa belleza tan única y característica que hipnotiza a la cámara en cada primer plano.",
+    "Lookmhee Punyapat destaca muchísimo por su carisma natural y esa vibra 'cool' y protectora, la cual contrasta a la perfección con la elegancia magnética de Sonya.",
+    "A pesar del intenso drama y las lágrimas que nos hacen derramar en sus series, los detrás de escena de proyectos como 'Harmony Secrets' y 'Hometown Romance' demuestran que en la vida real son súper juguetonas y no paran de reír juntas.",
+    "Los fans suelen bromear con que Lookmhee tiene una 'mirada letal' súper expresiva que solo activa cuando está compartiendo escena con Sonya.",
+    "Una de las cosas que más valora el fandom es la confianza absoluta que se tienen; ambas han mencionado cómo se cuidan y se dan apoyo moral antes de grabar las escenas más emocionales o íntimas.",
+    "Su versatilidad actoral es increíble: pueden pasar de la vibra cálida y nostálgica de un romance de pueblo natal a la intensidad de un amor prohibido o un secreto profundo sin perder ni un gramo de química."
   ]
 };
 
@@ -155,38 +159,38 @@ const MAX_CARDS = 5;
 
 function spawnSingleCard(ship) {
   if (activeCardsCount >= MAX_CARDS || currentShipInfo.length === 0) return;
-  
+
   const randomIndex = Math.floor(Math.random() * currentShipInfo.length);
   const fact = currentShipInfo[randomIndex];
-  
+
   const card = document.createElement('div');
   card.className = 'theme-info-card';
   card.innerHTML = `<strong>Dato</strong>${fact}`;
-  
+
   // Posicionamiento aleatorio en los bordes
   const isLeft = Math.random() > 0.5;
   const isTop = Math.random() > 0.5;
-  
+
   if (isLeft) {
     card.style.left = (Math.random() * 15 + 2) + 'vw';
   } else {
     card.style.right = (Math.random() * 15 + 2) + 'vw';
   }
-  
+
   if (isTop) {
     card.style.top = (Math.random() * 30 + 10) + 'vh';
   } else {
     card.style.bottom = (Math.random() * 30 + 10) + 'vh';
   }
-  
+
   card.style.animationDelay = (Math.random() * 2) + 's';
-  
+
   card.addEventListener('click', () => {
     card.remove();
     activeCardsCount--;
     setTimeout(() => spawnSingleCard(ship), 400);
   });
-  
+
   document.body.appendChild(card);
   activeCardsCount++;
 }
@@ -194,12 +198,12 @@ function spawnSingleCard(ship) {
 function applyThemeInfoCards(ship) {
   document.querySelectorAll('.theme-info-card').forEach((el) => el.remove());
   activeCardsCount = 0;
-  
+
   if (ship === 'default' || !SHIP_INFO[ship]) return;
-  
+
   currentShipInfo = [...SHIP_INFO[ship]];
   const numCards = Math.min(MAX_CARDS, currentShipInfo.length);
-  
+
   for (let i = 0; i < numCards; i++) {
     setTimeout(() => spawnSingleCard(ship), i * 300);
   }
@@ -255,7 +259,7 @@ function applyShip(ship) {
   } else {
     document.documentElement.style.setProperty("--theme-image", "none");
   }
-  
+
   applyThemeDecorations(ship);
   applyThemeInfoCards(ship);
 }
@@ -282,7 +286,7 @@ function buildPanel() {
       <p class="settings-section-label">Tema GL</p>
       <div class="settings-ships-grid">
         ${SHIPS.map(
-          (ship) => `
+    (ship) => `
           <button
             class="settings-ship-btn"
             data-ship="${ship.key}"
@@ -293,7 +297,7 @@ function buildPanel() {
             <span class="settings-ship-name">${ship.label}</span>
           </button>
         `,
-        ).join("")}
+  ).join("")}
       </div>
     </div>
   `;
