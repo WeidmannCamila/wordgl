@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WordGL - Juego 3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body data-game-id="juego_3" data-base-path="../">
+    <main class="app app-wide">
+      <header class="hero">
+        <p class="eyebrow">Juego 3</p>
+        <h1>Ranking de series</h1>
+        <p>Busca series en TMDB y arma tu top personal por puestos.</p>
+      </header>
+
+      <section class="status-panel" aria-live="polite">
+        <p id="statusText">Busca una serie y agregala a tu ranking.</p>
+        <p id="attemptText">Tu lista tiene 0 series.</p>
+      </section>
+
+      <section class="tmdb-search" aria-label="Buscador de series">
+        <form id="searchForm" class="tmdb-search-form">
+          <input
+            id="searchInput"
+            class="guess-input"
+            type="text"
+            autocomplete="off"
+            placeholder="Ej: GAP The Series"
+          />
+          <button id="searchBtn" class="share-btn" type="submit">Buscar</button>
+        </form>
+      </section>
+
+      <section>
+        <h2 class="section-title">Resultados TMDB</h2>
+        <div id="resultsGrid" class="tmdb-results" aria-live="polite"></div>
+      </section>
+
+      <section>
+        <div class="ranking-header-row">
+          <h2 class="section-title">Mi ranking</h2>
+          <button id="clearBtn" class="new-btn" type="button">
+            Vaciar ranking
+          </button>
+        </div>
+        <div
+          id="rankingList"
+          class="series-ranking-list"
+          aria-live="polite"
+        ></div>
+      </section>
+
+      <section id="gameLinks" class="game-links"></section>
+
+      <section class="help" id="help">
+        <p>
+          <strong>Tip:</strong> puedes editar el puesto manualmente y se
+          reordenara automaticamente la lista.
+        </p>
+      </section>
+    </main>
+
+    <script type="module" src="../js/settings.js"></script>
+    <script type="module" src="../js/juego3.js"></script>
+  </body>
+</html>

@@ -11,6 +11,12 @@ const GAME_LINKS = [
     title: "Barra de proximidad",
     description: "Ingresas palabras y ves que tan cerca estás.",
   },
+  {
+    id: "juego_3",
+    label: "Juego 3",
+    title: "Ranking de series",
+    description: "Busca series en TMDB y arma tu top personal.",
+  },
 ];
 
 export function getGameById(gameId) {
@@ -37,7 +43,8 @@ export function renderGameLinks(container, currentGameId, basePath = "./") {
   title.textContent = "Otros juegos";
 
   const description = document.createElement("p");
-  description.textContent = "Cuando terminas, puedes saltar a otro modo de juego.";
+  description.textContent =
+    "Cuando terminas, puedes saltar a otro modo de juego.";
 
   const list = document.createElement("div");
   list.className = "game-links-list";

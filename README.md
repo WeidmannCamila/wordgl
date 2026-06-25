@@ -4,6 +4,7 @@ Juego web con 2 modos:
 
 - Juego 1: tablero por letras (tipo Wordle adaptado).
 - Juego 2: aproximacion por afinidad semantica dentro del universo GL.
+- Juego 3: ranking personal de series con busqueda e imagenes desde TMDB.
 
 Ahora incluye backend liviano con API y base SQLite para guardar ranking entre usuarios sin cuenta.
 
@@ -27,10 +28,33 @@ npm start
 http://localhost:3000/
 ```
 
+## Configuracion TMDB (para Juego 3)
+
+El Juego 3 usa la API de TMDB desde el backend (proxy) para no exponer la API key en el navegador.
+Las imagenes y series se toman de la lista fija `list/8661015-gl` y se filtran por el texto que escriba la persona usuaria.
+
+La forma recomendada es crear un archivo `.env` en la raiz del proyecto con este contenido:
+
+```env
+TMDB_API_KEY=tu_api_key_de_tmdb
+TMDB_API_READ_ACCESS_TOKEN=tu_read_access_token_v4_opcional
+```
+
+Nota: para consultar listas (`/3/list/...`) TMDB puede exigir el token Bearer v4. Si ves `401 Authentication failed`, agrega `TMDB_API_READ_ACCESS_TOKEN`.
+
+Luego ejecuta el servidor normalmente con:
+
+```bash
+npm start
+```
+
+Si prefieres, tambien puedes definir la variable solo para una sesion de terminal.
+
 ## API disponible
 
 - `GET /api/health`
 - `GET /api/dictionary`
+- `GET /api/tmdb/tv/search?query=...`
 - `GET /api/ranking/:gameId?limit=10`
 - `POST /api/ranking/:gameId`
 
