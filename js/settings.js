@@ -62,6 +62,81 @@ function applyMode(mode) {
 
 let themeInterval = null;
 
+const SHIP_INFO = {
+  englot: [
+    "Protagonizan Show Me Love 👑",
+    "Se conocieron en Miss Grand",
+    "Estelarizan Petrichor 🌧️",
+    "Fandom: Englot"
+  ],
+  freenbecky: [
+    "Protagonistas de GAP The Series 💖",
+    "Estelarizan The Loyal Pin 🎀",
+    "Uranus 2324 🌌"
+  ],
+  lingorm: [
+    "Protagonistas de The Secret of Us 👩‍⚕️",
+    "Pertenecen a CH3",
+    "Only You es su próximo proyecto ✨"
+  ],
+  milklove: [
+    "Conocidas por 23.5 🌎",
+    "Aparecieron en Bad Buddy juntas",
+    "Son actrices de GMMTV"
+  ],
+  viewjune: [
+    "Aparecen en 23.5 👽",
+    "Son parte de GMMTV",
+    "Su ship secundario es muy querido"
+  ],
+  namtanfilm: [
+    "Protagonizan Pluto 🪐",
+    "Ambas de GMMTV",
+    "Actúan en The Girls Rules"
+  ],
+  lmsy: [
+    "Protagonizan Affair 🎬",
+    "IdolFactory",
+    "Harmony Secret 🎵"
+  ]
+};
+
+function applyThemeInfoCards(ship) {
+  document.querySelectorAll('.theme-info-card').forEach((el) => el.remove());
+  
+  if (ship === 'default' || !SHIP_INFO[ship]) return;
+  
+  const infoList = [...SHIP_INFO[ship]].sort(() => Math.random() - 0.5);
+  const numCards = Math.floor(Math.random() * 2) + 2; // 2 o 3 cards
+  
+  for (let i = 0; i < Math.min(numCards, infoList.length); i++) {
+    const card = document.createElement('div');
+    card.className = 'theme-info-card';
+    card.innerHTML = `<strong>Dato</strong>${infoList[i]}`;
+    
+    // Posicionamiento aleatorio en los bordes
+    const isLeft = Math.random() > 0.5;
+    const isTop = Math.random() > 0.5;
+    
+    if (isLeft) {
+      card.style.left = (Math.random() * 10 + 2) + 'vw';
+    } else {
+      card.style.right = (Math.random() * 10 + 2) + 'vw';
+    }
+    
+    if (isTop) {
+      card.style.top = (Math.random() * 20 + 10) + 'vh';
+    } else {
+      card.style.bottom = (Math.random() * 20 + 10) + 'vh';
+    }
+    
+    // Animation delay
+    card.style.animationDelay = (Math.random() * 2) + 's';
+    
+    document.body.appendChild(card);
+  }
+}
+
 function applyThemeDecorations(ship) {
   if (themeInterval) {
     clearInterval(themeInterval);
@@ -114,6 +189,7 @@ function applyShip(ship) {
   }
   
   applyThemeDecorations(ship);
+  applyThemeInfoCards(ship);
 }
 
 function buildPanel() {

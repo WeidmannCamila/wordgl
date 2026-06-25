@@ -661,3 +661,32 @@ export function findThaiGlWordByNormalized(value) {
     getThaiGlWordBank().find((entry) => entry.normalized === normalized) || null
   );
 }
+
+export function getDailyThaiGlWord({
+  gameId = "juego_1",
+  minLength = 3,
+  maxLength = Infinity,
+} = {}) {
+  const candidates = getThaiGlWordBank().filter((entry) => {
+    const length = entry.normalized.length;
+    return length >= minLength && length <= maxLength;
+  });
+
+  const pool = candidates.length > 0 ? candidates : getThaiGlWordBank();
+  
+  const today = new Date();
+  const dateString = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+  
+  let seed = 0;
+  const strToHash = gameId + dateString;
+  for (let i = 0; i < strToHash.length; i++) {
+    seed = Math.imul(31, seed) + strToHash.charCodeAt(i) | 0;
+  }
+  if (seed === 0) seed = 1;
+  
+  const x = Math.sin(seed) * 10000;
+  const randomValue = Math.abs(x - Math.floor(x));
+  
+  const index = Math.floor(randomValue * pool.length);
+  return pool[index];
+}

@@ -1,14 +1,12 @@
 import { renderGameLinks } from "./shared.js";
-import { getRandomThaiGlWord } from "./dictionaries/thaiGlDictionary.js";
+import { getDailyThaiGlWord } from "./dictionaries/thaiGlDictionary.js";
 import { createLocalRanking } from "./ranking.js";
-
-const MAX_ATTEMPTS = 7;
 
 const boardEl = document.getElementById("board");
 const statusTextEl = document.getElementById("statusText");
 const attemptTextEl = document.getElementById("attemptText");
 const shareBtnEl = document.getElementById("shareBtn");
-const newGameBtnEl = document.getElementById("newGameBtn");
+const surrenderBtnEl = document.getElementById("surrenderBtn");
 const hintBtnEl = document.getElementById("hintBtn");
 const hintPanelEl = document.getElementById("hintPanel");
 const gameLinksEl = document.getElementById("gameLinks");
@@ -16,17 +14,20 @@ const helpTextEl = document.querySelector(".help p");
 const appEl = document.querySelector(".app");
 
 const basePath = document.body.dataset.basePath || "./";
+const todayStr = new Date().toDateString();
 
-let secretEntry = pickSecretEntry();
+let secretEntry = getDailyThaiGlWord({ gameId: "juego_1" });
 let secretWord = secretEntry.normalized.toUpperCase();
 let currentRow = 0;
 let currentCol = 0;
 let wordLength = secretWord.length;
-let guesses = emptyGrid(MAX_ATTEMPTS, wordLength);
-let results = emptyGrid(MAX_ATTEMPTS, wordLength);
+let guesses = [Array(wordLength).fill("")];
+let results = [Array(wordLength).fill("")];
 let gameOver = false;
 let won = false;
 let hintsUsed = 0;
+
+checkDailyState();
 
 document.title = "WordGL - Juego 1";
 helpTextEl.innerHTML = `<strong>Reglas:</strong> Verde = letra correcta y bien ubicada, Amarillo = letra correcta en otra posicion, Gris = letra no esta. La palabra actual tiene ${wordLength} caracteres.`;
@@ -57,15 +58,41 @@ const ranking = createLocalRanking({
 
 window.addEventListener("keydown", onKeyDown);
 shareBtnEl.addEventListener("click", shareResult);
-newGameBtnEl.addEventListener("click", resetGame);
+if (surrenderBtnEl) surrenderBtnEl.addEventListener("click", surrenderGame);
 hintBtnEl.addEventListener("click", giveHint);
 
-function pickSecretEntry() {
-  let word;
-  do {
-    word = getRandomThaiGlWord({ minLength: 3 });
-  } while (word.normalized.length > 12);
-  return word;
+function checkDailyState() {
+  const savedStr = localStorage.getItem("wordgl:juego_1:daily");
+  if (savedStr) {
+    const saved = JSON.parse(savedStr);
+    if (saved.date === todayStr && saved.finished) {
+      gameOver = true;
+      won = saved.won;
+      currentRow = saved.attempts - 1;
+      guesses = saved.guesses || guesses;
+      results = saved.results || results;
+      
+      statusTextEl.textContent = won 
+        ? `Ya ganaste hoy. Adivinaste ${secretEntry.label} en ${saved.attempts} intentos.` 
+        : `Ya jugaste hoy. La palabra era ${secretEntry.label}.`;
+        
+      shareBtnEl.disabled = false;
+      if (surrenderBtnEl) surrenderBtnEl.disabled = true;
+      hintBtnEl.disabled = true;
+      gameLinksEl.hidden = false;
+    }
+  }
+}
+
+function saveDailyState() {
+  localStorage.setItem("wordgl:juego_1:daily", JSON.stringify({
+    date: todayStr,
+    finished: true,
+    won,
+    attempts: currentRow + 1,
+    guesses,
+    results
+  }));
 }
 
 function emptyGrid(rows, cols) {
@@ -80,7 +107,7 @@ function updateBoardLayout() {
 function buildBoard() {
   boardEl.innerHTML = "";
 
-  for (let row = 0; row <= currentRow && row < MAX_ATTEMPTS; row += 1) {
+  for (let row = 0; row <= currentRow; row += 1) {
     const rowEl = document.createElement("div");
     rowEl.className = "row";
 
@@ -104,7 +131,7 @@ function buildBoard() {
 }
 
 function paintBoard() {
-  for (let row = 0; row <= currentRow && row < MAX_ATTEMPTS; row += 1) {
+  for (let row = 0; row <= currentRow; row += 1) {
     for (let col = 0; col < wordLength; col += 1) {
       const tile = document.getElementById(`tile-${row}-${col}`);
       if (!tile) continue;
@@ -124,7 +151,7 @@ function paintBoard() {
     }
   }
 
-  attemptTextEl.textContent = `Intento ${Math.min(currentRow + 1, MAX_ATTEMPTS)} de ${MAX_ATTEMPTS}`;
+  attemptTextEl.textContent = `Intento ${currentRow + 1}`;
 }
 
 function onKeyDown(event) {
@@ -210,7 +237,9 @@ function submitGuess() {
     won = true;
     statusTextEl.textContent = `Correcto. Adivinaste ${secretEntry.label} en ${currentRow + 1} intentos.`;
     shareBtnEl.disabled = false;
+    if (surrenderBtnEl) surrenderBtnEl.disabled = true;
     gameLinksEl.hidden = false;
+    saveDailyState();
     return;
   }
 
@@ -218,18 +247,26 @@ function submitGuess() {
 
   currentRow += 1;
   currentCol = 0;
+  
+  guesses.push(Array(wordLength).fill(""));
+  results.push(Array(wordLength).fill(""));
 
-  if (currentRow < MAX_ATTEMPTS && !gameOver) {
+  if (!gameOver) {
     buildBoard();
     paintBoard();
+    window.scrollTo(0, document.body.scrollHeight);
   }
+}
 
-  if (currentRow >= MAX_ATTEMPTS) {
-    gameOver = true;
-    statusTextEl.textContent = `Sin intentos. La palabra era ${secretEntry.label}.`;
-    shareBtnEl.disabled = true;
-    gameLinksEl.hidden = false;
-  }
+function surrenderGame() {
+  if (gameOver) return;
+  gameOver = true;
+  won = false;
+  statusTextEl.textContent = `Te rendiste. La palabra era ${secretEntry.label}.`;
+  shareBtnEl.disabled = true;
+  if (surrenderBtnEl) surrenderBtnEl.disabled = true;
+  gameLinksEl.hidden = false;
+  saveDailyState();
 }
 
 function evaluateGuess(guess) {
@@ -268,7 +305,8 @@ function evaluateGuess(guess) {
 function buildGame1Score() {
   let score = 0;
   if (won) {
-    score = (MAX_ATTEMPTS - currentRow) * 100 + wordLength * 5;
+    // 500 base points minus 10 per attempt over 1, plus word length bonus
+    score = Math.max(10, 500 - (currentRow * 10)) + wordLength * 5;
   } else {
     const bestExact = results.reduce((best, row) => {
       const exact = row.filter((state) => state === "correct").length;
@@ -315,7 +353,7 @@ async function shareResult() {
     .map((row) => row.map(toEmoji).join(""))
     .join("\n");
 
-  const message = `WordGL ${usedAttempts}/${MAX_ATTEMPTS}\n${emojiRows}`;
+  const message = `WordGL (Clásico) - ${usedAttempts} intentos\nPalabra: ${secretEntry.label}\nPuntaje: ${buildGame1Score()}\n${emojiRows}\n\nJuega tú también en: ${window.location.origin}${window.location.pathname}`;
 
   if (navigator.share) {
     try {
@@ -347,29 +385,3 @@ function toEmoji(state) {
   return "⬜";
 }
 
-function resetGame() {
-  secretEntry = pickSecretEntry();
-  secretWord = secretEntry.normalized.toUpperCase();
-  wordLength = secretWord.length;
-  currentRow = 0;
-  currentCol = 0;
-  guesses = emptyGrid(MAX_ATTEMPTS, wordLength);
-  results = emptyGrid(MAX_ATTEMPTS, wordLength);
-  gameOver = false;
-  won = false;
-  hintsUsed = 0;
-
-  shareBtnEl.disabled = true;
-  hintBtnEl.disabled = false;
-  hintPanelEl.hidden = true;
-  hintPanelEl.innerHTML = "";
-  gameLinksEl.hidden = true;
-  helpTextEl.innerHTML = `<strong>Reglas:</strong> Verde = letra correcta y bien ubicada, Amarillo = letra correcta en otra posicion, Gris = letra no esta. La palabra actual tiene ${wordLength} caracteres.`;
-  statusTextEl.textContent = "Escribe tu palabra y presiona Enter.";
-  attemptTextEl.textContent = `Intento 1 de ${MAX_ATTEMPTS}`;
-
-  updateBoardLayout();
-  buildBoard();
-  paintBoard();
-  ranking.markRoundStart();
-}

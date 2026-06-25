@@ -1,17 +1,15 @@
 import { renderGameLinks } from "./shared.js";
 import {
   findThaiGlWordByNormalized,
-  getRandomThaiGlWord,
-  getThaiGlWordBank, // Necesitamos exportar la lista entera para calcular las redes
+  getDailyThaiGlWord,
+  getThaiGlWordBank,
 } from "./dictionaries/thaiGlDictionary.js";
 import { createLocalRanking } from "./ranking.js";
-
-const MAX_ATTEMPTS = 7; // Puedes subirlo si quieres, ya que al ser por relaciones puede llevar más intentos.
 
 const statusTextEl = document.getElementById("statusText");
 const attemptTextEl = document.getElementById("attemptText");
 const shareBtnEl = document.getElementById("shareBtn");
-const newGameBtnEl = document.getElementById("newGameBtn");
+const surrenderBtnEl = document.getElementById("surrenderBtn");
 const submitBtnEl = document.getElementById("submitBtn");
 const guessInputEl = document.getElementById("guessInput");
 const feedbackListEl = document.getElementById("feedbackList");
@@ -21,9 +19,9 @@ const hintPanelEl = document.getElementById("hintPanel");
 const helpTextEl = document.querySelector("#help p");
 
 const basePath = document.body.dataset.basePath || "./";
+const todayStr = new Date().toDateString();
 
-// Ahora secretEntry guarda el objeto completo, no solo la palabra
-let secretEntry = pickSecretWord();
+let secretEntry = getDailyThaiGlWord({ gameId: "juego_2" });
 let attempts = [];
 let gameOver = false;
 let won = false;
@@ -35,6 +33,7 @@ helpTextEl.innerHTML =
 
 renderGameLinks(gameLinksEl, "juego_2", basePath);
 gameLinksEl.hidden = true;
+checkDailyState();
 paintStatus();
 
 const ranking = createLocalRanking({
@@ -58,13 +57,40 @@ const ranking = createLocalRanking({
 guessInputEl.addEventListener("keydown", onInputKeyDown);
 submitBtnEl.addEventListener("click", submitGuess);
 shareBtnEl.addEventListener("click", shareResult);
-newGameBtnEl.addEventListener("click", resetGame);
+if (surrenderBtnEl) surrenderBtnEl.addEventListener("click", surrenderGame);
 hintBtnEl.addEventListener("click", giveHint);
 
 guessInputEl.focus();
 
-function pickSecretWord() {
-  return getRandomThaiGlWord({ minLength: 3 });
+function checkDailyState() {
+  const savedStr = localStorage.getItem("wordgl:juego_2:daily");
+  if (savedStr) {
+    const saved = JSON.parse(savedStr);
+    if (saved.date === todayStr && saved.finished) {
+      gameOver = true;
+      won = saved.won;
+      attempts = saved.attempts || attempts;
+      
+      statusTextEl.textContent = won 
+        ? `Ya ganaste hoy. Encontraste ${secretEntry.label} en ${attempts.length} intentos.` 
+        : `Ya jugaste hoy. La palabra era ${secretEntry.label}.`;
+        
+      shareBtnEl.disabled = false;
+      if (surrenderBtnEl) surrenderBtnEl.disabled = true;
+      hintBtnEl.disabled = true;
+      gameLinksEl.hidden = false;
+      renderAttempts();
+    }
+  }
+}
+
+function saveDailyState() {
+  localStorage.setItem("wordgl:juego_2:daily", JSON.stringify({
+    date: todayStr,
+    finished: true,
+    won,
+    attempts
+  }));
 }
 
 function onInputKeyDown(event) {
@@ -114,22 +140,29 @@ function submitGuess() {
     gameOver = true;
     statusTextEl.textContent = `¡Correcto! La palabra era ${matchingEntry.label}.`;
     shareBtnEl.disabled = false;
+    if (surrenderBtnEl) surrenderBtnEl.disabled = true;
     gameLinksEl.hidden = false;
     paintStatus();
+    saveDailyState();
     return;
   }
 
-  if (attempts.length >= MAX_ATTEMPTS) {
-    gameOver = true;
-    statusTextEl.textContent = `Sin intentos. La palabra era ${secretEntry.label}.`;
-    gameLinksEl.hidden = false;
-  } else {
-    statusTextEl.textContent = `Tu palabra está ${score}% cerca en universo compartido.`;
-  }
+  statusTextEl.textContent = `Tu palabra está ${score}% cerca en universo compartido.`;
 
   guessInputEl.value = "";
   guessInputEl.focus();
   paintStatus();
+}
+
+function surrenderGame() {
+  if (gameOver) return;
+  gameOver = true;
+  won = false;
+  statusTextEl.textContent = `Te rendiste. La palabra era ${secretEntry.label}.`;
+  shareBtnEl.disabled = true;
+  if (surrenderBtnEl) surrenderBtnEl.disabled = true;
+  gameLinksEl.hidden = false;
+  saveDailyState();
 }
 
 function renderAttempts() {
@@ -194,7 +227,7 @@ function renderAttempts() {
 }
 
 function paintStatus() {
-  attemptTextEl.textContent = `Intento ${Math.min(attempts.length + 1, MAX_ATTEMPTS)} de ${MAX_ATTEMPTS}`;
+  attemptTextEl.textContent = `Intento ${attempts.length + 1}`;
   if (!gameOver) {
     shareBtnEl.disabled = true;
   }
@@ -208,7 +241,7 @@ function buildGame2Score() {
   const bestScore = getBestAffinityScore();
   let baseScore = bestScore;
   if (won) {
-    baseScore = 200 + (MAX_ATTEMPTS - attempts.length) * 20 + bestScore;
+    baseScore = 500 - (attempts.length * 10) + bestScore;
   }
   return Math.max(0, baseScore - (hintsUsed * 15));
 }
@@ -302,7 +335,7 @@ function getSemanticSimilarityScore(secret, guess, allEntries) {
 async function shareResult() {
   if (!won) return;
   const lastAttempt = attempts[attempts.length - 1];
-  const message = `WordGL (Semántico) ${attempts.length}/${MAX_ATTEMPTS}\n${lastAttempt.label} -> ${lastAttempt.score}%`;
+  const message = `WordGL (Semántico) - ${attempts.length} intentos\nPalabra: ${secretEntry.label}\nPuntaje: ${buildGame2Score()}\nCercanía máxima: ${getBestAffinityScore()}%\n\nJuega tú también en: ${window.location.origin}${window.location.pathname}`;
 
   if (navigator.share) {
     try {
@@ -319,22 +352,4 @@ async function shareResult() {
   }
 }
 
-function resetGame() {
-  secretEntry = pickSecretWord();
-  attempts = [];
-  gameOver = false;
-  won = false;
-  hintsUsed = 0;
 
-  guessInputEl.value = "";
-  shareBtnEl.disabled = true;
-  hintBtnEl.disabled = false;
-  hintPanelEl.hidden = true;
-  hintPanelEl.innerHTML = "";
-  gameLinksEl.hidden = true;
-  feedbackListEl.innerHTML = "";
-  statusTextEl.textContent = "Escribe una palabra y presiona Enter.";
-  paintStatus();
-  guessInputEl.focus();
-  ranking.markRoundStart();
-}
