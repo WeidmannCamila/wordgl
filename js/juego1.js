@@ -76,7 +76,7 @@ function updateBoardLayout() {
 function buildBoard() {
   boardEl.innerHTML = "";
 
-  for (let row = 0; row < MAX_ATTEMPTS; row += 1) {
+  for (let row = 0; row <= currentRow && row < MAX_ATTEMPTS; row += 1) {
     const rowEl = document.createElement("div");
     rowEl.className = "row";
 
@@ -100,9 +100,10 @@ function buildBoard() {
 }
 
 function paintBoard() {
-  for (let row = 0; row < MAX_ATTEMPTS; row += 1) {
+  for (let row = 0; row <= currentRow && row < MAX_ATTEMPTS; row += 1) {
     for (let col = 0; col < wordLength; col += 1) {
       const tile = document.getElementById(`tile-${row}-${col}`);
+      if (!tile) continue;
       const letter = guesses[row][col];
       const state = results[row][col];
 
@@ -137,7 +138,22 @@ function onKeyDown(event) {
 
   if (key === "ENTER") {
     submitGuess();
-    paintBoard();
+    return;
+  }
+  
+  if (key === "ARROWLEFT") {
+    if (currentCol > 0) {
+      currentCol -= 1;
+      paintBoard();
+    }
+    return;
+  }
+  
+  if (key === "ARROWRIGHT") {
+    if (currentCol < wordLength - 1) {
+      currentCol += 1;
+      paintBoard();
+    }
     return;
   }
 
@@ -198,6 +214,11 @@ function submitGuess() {
 
   currentRow += 1;
   currentCol = 0;
+
+  if (currentRow < MAX_ATTEMPTS && !gameOver) {
+    buildBoard();
+    paintBoard();
+  }
 
   if (currentRow >= MAX_ATTEMPTS) {
     gameOver = true;

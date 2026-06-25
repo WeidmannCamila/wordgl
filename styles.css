@@ -167,10 +167,15 @@ body {
   width: min(980px, 100%);
 }
 
-.hero h1 {
+.hero .gl-title {
   margin: 0;
-  font-size: clamp(1.9rem, 5vw, 2.6rem);
-  letter-spacing: 0.04em;
+  font-size: clamp(2.2rem, 6vw, 3rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--accent) 0%, #ff8a8a 50%, #feca57 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.02em;
+  text-shadow: 0 4px 15px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
 .eyebrow {
