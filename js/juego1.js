@@ -9,6 +9,8 @@ const statusTextEl = document.getElementById("statusText");
 const attemptTextEl = document.getElementById("attemptText");
 const shareBtnEl = document.getElementById("shareBtn");
 const newGameBtnEl = document.getElementById("newGameBtn");
+const hintBtnEl = document.getElementById("hintBtn");
+const hintPanelEl = document.getElementById("hintPanel");
 const gameLinksEl = document.getElementById("gameLinks");
 const helpTextEl = document.querySelector(".help p");
 const appEl = document.querySelector(".app");
@@ -24,6 +26,7 @@ let guesses = emptyGrid(MAX_ATTEMPTS, wordLength);
 let results = emptyGrid(MAX_ATTEMPTS, wordLength);
 let gameOver = false;
 let won = false;
+let hintsUsed = 0;
 
 document.title = "WordGL - Juego 1";
 helpTextEl.innerHTML = `<strong>Reglas:</strong> Verde = letra correcta y bien ubicada, Amarillo = letra correcta en otra posicion, Gris = letra no esta. La palabra actual tiene ${wordLength} caracteres.`;
@@ -55,6 +58,7 @@ const ranking = createLocalRanking({
 window.addEventListener("keydown", onKeyDown);
 shareBtnEl.addEventListener("click", shareResult);
 newGameBtnEl.addEventListener("click", resetGame);
+hintBtnEl.addEventListener("click", giveHint);
 
 function pickSecretEntry() {
   return getRandomThaiGlWord({ minLength: 3 });
@@ -80,6 +84,14 @@ function buildBoard() {
       const tile = document.createElement("div");
       tile.className = "tile";
       tile.id = `tile-${row}-${col}`;
+      
+      tile.addEventListener("click", () => {
+        if (!gameOver && row === currentRow) {
+          currentCol = col;
+          paintBoard();
+        }
+      });
+      
       rowEl.appendChild(tile);
     }
 
@@ -131,18 +143,36 @@ function onKeyDown(event) {
 
   if (/^[A-Z0-9]$/.test(key) && currentCol < wordLength) {
     guesses[currentRow][currentCol] = key;
-    currentCol += 1;
+    
+    let nextCol = currentCol + 1;
+    while (nextCol < wordLength && guesses[currentRow][nextCol] !== "") {
+      nextCol++;
+    }
+    if (nextCol === wordLength) {
+       nextCol = guesses[currentRow].findIndex(val => val === "");
+       if (nextCol === -1) nextCol = wordLength;
+    }
+    currentCol = nextCol;
     paintBoard();
   }
 }
 
 function removeLetter() {
-  if (currentCol === 0) {
+  if (currentCol === wordLength) {
+    currentCol -= 1;
+    guesses[currentRow][currentCol] = "";
+    return;
+  }
+  
+  if (guesses[currentRow][currentCol] !== "") {
+    guesses[currentRow][currentCol] = "";
     return;
   }
 
-  currentCol -= 1;
-  guesses[currentRow][currentCol] = "";
+  if (currentCol > 0) {
+    currentCol -= 1;
+    guesses[currentRow][currentCol] = "";
+  }
 }
 
 function submitGuess() {
@@ -211,16 +241,42 @@ function evaluateGuess(guess) {
 }
 
 function buildGame1Score() {
+  let score = 0;
   if (won) {
-    return (MAX_ATTEMPTS - currentRow) * 100 + wordLength * 5;
+    score = (MAX_ATTEMPTS - currentRow) * 100 + wordLength * 5;
+  } else {
+    const bestExact = results.reduce((best, row) => {
+      const exact = row.filter((state) => state === "correct").length;
+      return Math.max(best, exact);
+    }, 0);
+    score = bestExact * 10;
   }
+  
+  return Math.max(0, score - (hintsUsed * 15));
+}
 
-  const bestExact = results.reduce((best, row) => {
-    const exact = row.filter((state) => state === "correct").length;
-    return Math.max(best, exact);
-  }, 0);
-
-  return bestExact * 10;
+function giveHint() {
+  if (gameOver || hintsUsed >= 2) return;
+  
+  hintsUsed += 1;
+  hintPanelEl.hidden = false;
+  
+  if (hintsUsed === 1) {
+    let type = secretEntry.kind;
+    if (type === "persona") type = "Actriz/Persona";
+    else if (type === "ship") type = "Ship / Pareja";
+    else if (type === "serie") type = "Serie / Película";
+    else if (type === "productora") type = "Agencia / Productora";
+    
+    hintPanelEl.innerHTML = `<strong>Pista 1:</strong> La palabra es de tipo <em>${type}</em>.`;
+  } else if (hintsUsed === 2) {
+    let rel = secretEntry.relations && secretEntry.relations.length > 0 
+      ? secretEntry.relations[Math.floor(Math.random() * secretEntry.relations.length)]
+      : "algo secreto";
+      
+    hintPanelEl.innerHTML += `<br><strong>Pista 2:</strong> Está relacionada con <em>${rel}</em>.`;
+    hintBtnEl.disabled = true;
+  }
 }
 
 async function shareResult() {
@@ -276,8 +332,12 @@ function resetGame() {
   results = emptyGrid(MAX_ATTEMPTS, wordLength);
   gameOver = false;
   won = false;
+  hintsUsed = 0;
 
   shareBtnEl.disabled = true;
+  hintBtnEl.disabled = false;
+  hintPanelEl.hidden = true;
+  hintPanelEl.innerHTML = "";
   gameLinksEl.hidden = true;
   helpTextEl.innerHTML = `<strong>Reglas:</strong> Verde = letra correcta y bien ubicada, Amarillo = letra correcta en otra posicion, Gris = letra no esta. La palabra actual tiene ${wordLength} caracteres.`;
   statusTextEl.textContent = "Escribe tu palabra y presiona Enter.";

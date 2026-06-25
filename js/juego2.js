@@ -16,6 +16,8 @@ const submitBtnEl = document.getElementById("submitBtn");
 const guessInputEl = document.getElementById("guessInput");
 const feedbackListEl = document.getElementById("feedbackList");
 const gameLinksEl = document.getElementById("gameLinks");
+const hintBtnEl = document.getElementById("hintBtn");
+const hintPanelEl = document.getElementById("hintPanel");
 const helpTextEl = document.querySelector("#help p");
 
 const basePath = document.body.dataset.basePath || "./";
@@ -25,6 +27,7 @@ let secretEntry = pickSecretWord();
 let attempts = [];
 let gameOver = false;
 let won = false;
+let hintsUsed = 0;
 
 document.title = "WordGL - Juego por Conexiones";
 helpTextEl.innerHTML =
@@ -56,6 +59,7 @@ guessInputEl.addEventListener("keydown", onInputKeyDown);
 submitBtnEl.addEventListener("click", submitGuess);
 shareBtnEl.addEventListener("click", shareResult);
 newGameBtnEl.addEventListener("click", resetGame);
+hintBtnEl.addEventListener("click", giveHint);
 
 guessInputEl.focus();
 
@@ -202,11 +206,35 @@ function getBestAffinityScore() {
 
 function buildGame2Score() {
   const bestScore = getBestAffinityScore();
+  let baseScore = bestScore;
   if (won) {
-    return 200 + (MAX_ATTEMPTS - attempts.length) * 20 + bestScore;
+    baseScore = 200 + (MAX_ATTEMPTS - attempts.length) * 20 + bestScore;
   }
+  return Math.max(0, baseScore - (hintsUsed * 15));
+}
 
-  return bestScore;
+function giveHint() {
+  if (gameOver || hintsUsed >= 2) return;
+  
+  hintsUsed += 1;
+  hintPanelEl.hidden = false;
+  
+  if (hintsUsed === 1) {
+    let type = secretEntry.kind;
+    if (type === "persona") type = "Actriz/Persona";
+    else if (type === "ship") type = "Ship / Pareja";
+    else if (type === "serie") type = "Serie / Película";
+    else if (type === "productora") type = "Agencia / Productora";
+    
+    hintPanelEl.innerHTML = `<strong>Pista 1:</strong> Es de tipo <em>${type}</em>.`;
+  } else if (hintsUsed === 2) {
+    let rel = secretEntry.relations && secretEntry.relations.length > 0 
+      ? secretEntry.relations[Math.floor(Math.random() * secretEntry.relations.length)]
+      : "algo secreto";
+      
+    hintPanelEl.innerHTML += `<br><strong>Pista 2:</strong> Está conectada con <em>${rel}</em>.`;
+    hintBtnEl.disabled = true;
+  }
 }
 
 // 🧠 EL NUEVO MOTOR: Cálculo de similitud por relaciones e intersección (Jaccard Index)
@@ -296,9 +324,13 @@ function resetGame() {
   attempts = [];
   gameOver = false;
   won = false;
+  hintsUsed = 0;
 
   guessInputEl.value = "";
   shareBtnEl.disabled = true;
+  hintBtnEl.disabled = false;
+  hintPanelEl.hidden = true;
+  hintPanelEl.innerHTML = "";
   gameLinksEl.hidden = true;
   feedbackListEl.innerHTML = "";
   statusTextEl.textContent = "Escribe una palabra y presiona Enter.";
